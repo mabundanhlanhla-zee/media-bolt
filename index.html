@@ -366,9 +366,9 @@
     <div class="nav-tab active"  onclick="switchView('home')">Home</div>
     <div class="nav-tab" onclick="switchView('jobs')">Jobs</div>
     <div class="nav-tab" onclick="switchView('talent')">Talent</div>
-    <div class="nav-tab" onclick="switchView('post')">Post Job</div>
+
     <div class="nav-tab" onclick="switchView('admin')">Dashboard</div>
-    <div class="nav-tab" onclick="switchView('revenue')">Revenue</div>
+
   </div>
   <div class="offline-badge" onclick="showOffline()">
     <div class="dot"></div> Low-Data Mode
@@ -379,7 +379,7 @@
 <div class="view active" id="view-home">
   <div class="hero">
     <h1>Where <em>African voices</em><br>find their platform.</h1>
-    <p>Media Bolt connects South African media companies with verified journalists, PR writers, visual specialists and vernacular translators — fast, fair and culturally fluent.</p>
+    <p>Media Bolt connects South African media companies with verified journalists, PR writers, and vernacular translators — fast, fair and culturally fluent.</p>
     <div class="lang-chips">
       <span class="lang-chip">isiZulu</span><span class="lang-chip">isiXhosa</span>
       <span class="lang-chip">Sesotho</span><span class="lang-chip">Afrikaans</span>
@@ -472,30 +472,7 @@
   <div class="grid grid-3" id="talent-grid"></div>
 </div>
 
-<!-- ══════════════ POST JOB ══════════════ -->
-<div class="view" id="view-post">
-  <p class="section-title">Post a New Job</p>
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.8rem;">
-    <div class="form-grid">
-      <div class="form-field"><label>Job Title</label><input type="text" placeholder="e.g. isiZulu News Translator" id="pj-title"/></div>
-      <div class="form-field"><label>Company Name</label><input type="text" placeholder="e.g. SABC News" id="pj-company"/></div>
-      <div class="form-field"><label>Service Type</label>
-        <select id="pj-type"><option>Translation</option><option>Journalism</option><option>PR Writing</option><option>Voiceover</option><option>Video Production</option></select>
-      </div>
-      <div class="form-field"><label>Language Required</label>
-        <select id="pj-lang"><option>isiZulu</option><option>isiXhosa</option><option>Sesotho</option><option>Afrikaans</option><option>Setswana</option><option>Sepedi</option><option>Tshivenda</option><option>Xitsonga</option></select>
-      </div>
-      <div class="form-field"><label>Budget (ZAR)</label><input type="number" placeholder="e.g. 2500" id="pj-budget"/></div>
-      <div class="form-field"><label>Deadline</label><input type="date" id="pj-deadline"/></div>
-      <div class="form-field full"><label>Job Description</label><textarea placeholder="Describe the scope, format, tone and any cultural considerations…" id="pj-desc"></textarea></div>
-    </div>
-    <div class="form-actions">
-      <button class="btn btn-gold" onclick="postJob()">Post Job & Find Matches</button>
-      <button class="btn btn-outline" onclick="previewEstimate()">Get AI Estimate First</button>
-    </div>
-    <div id="post-confirm" style="display:none;margin-top:1rem;background:#e8f4eb;border-radius:10px;padding:1rem;font-size:0.87rem;color:var(--sage);font-weight:600;"></div>
-  </div>
-</div>
+
 
 <!-- ══════════════ ADMIN DASHBOARD ══════════════ -->
 <div class="view" id="view-admin">
@@ -740,7 +717,7 @@ function switchView(v) {
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
-  const tabs = ['home','jobs','talent','post','admin','revenue'];
+  const tabs = ['home','jobs','talent','admin'];
   document.querySelectorAll('.nav-tab')[tabs.indexOf(v)]?.classList.add('active');
   if(v==='home') renderHome();
   if(v==='jobs') { renderJobs(); calcEstimate(); }
