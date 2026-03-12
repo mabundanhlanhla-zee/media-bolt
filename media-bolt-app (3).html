@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Media Bolt — Media Practitioner Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --cream: #f5f0e8;
+    --gold: #c8993a;
+    --gold-light: #f0d080;
+    --rust: #c0421a;
+    --sage: #4a7c59;
+    --sky: #2a6496;
+    --muted: #7a7060;
+    --card: #fffdf7;
+    --border: #e0d8c8;
+    --offline: #e8a020;
+    --green: #4caf7d;
+    --blue: #5b9bd5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--ink); color: var(--cream);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 58px; position: sticky; top: 0; z-index: 100;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif; font-size: 2rem;
+    letter-spacing: 0.02em; color: var(--gold); cursor: pointer;
+    text-decoration: none; transition: opacity 0.2s;
+    display: flex; align-items: center; gap: 0.3rem; line-height: 1;
+  }
+  .logo:hover { opacity: 0.85; }
+  .logo .bolt { font-size: 1.6rem; display: flex; align-items: center; margin-top: -1px; }
+  .logo span { color: var(--cream); }
+  .nav-tabs { display: flex; gap: 0; }
+  .nav-tab {
+    padding: 0 1.1rem; height: 58px; display: flex; align-items: center;
+    font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; cursor: pointer;
+    border-bottom: 3px solid transparent; color: #b0a898; transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--cream); }
+  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .offline-badge {
+    display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem;
+    background: var(--offline); color: #fff; padding: 0.25rem 0.7rem;
+    border-radius: 20px; cursor: pointer; font-weight: 600;
+  }
+  .offline-badge .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #fff;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* ── VIEWS ── */
+  .view { display: none; padding: 2rem; max-width: 1100px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--ink); color: var(--cream); border-radius: 16px;
+    padding: 3rem 2.5rem; margin-bottom: 2rem; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,153,58,0.18) 0%, transparent 70%);
+  }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 2.6rem; line-height: 1.15; margin-bottom: 0.8rem; }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero p { color: #b0a898; font-size: 1rem; max-width: 560px; line-height: 1.65; margin-bottom: 1.5rem; }
+  .lang-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .lang-chip {
+    background: rgba(200,153,58,0.15); border: 1px solid rgba(200,153,58,0.35);
+    color: var(--gold-light); font-size: 0.75rem; font-weight: 600;
+    padding: 0.3rem 0.75rem; border-radius: 20px; letter-spacing: 0.04em;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Playfair Display', serif; font-size: 1.35rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── GRIDS ── */
+  .grid { display: grid; gap: 1rem; }
+  .grid-2 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.3rem; transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.09); transform: translateY(-2px); }
+  .job-card { cursor: pointer; }
+  .job-card .job-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.6rem; }
+  .job-card h3 { font-size: 0.97rem; font-weight: 600; line-height: 1.35; }
+  .job-card .company { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .job-card .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.7rem; }
+  .tag { font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 20px; letter-spacing: 0.04em; }
+  .tag-lang { background: #e8f4eb; color: var(--sage); }
+  .tag-type { background: #e8eef8; color: var(--sky); }
+  .tag-urgent { background: #fdecea; color: var(--rust); }
+  .tag-ai { background: #fdf3e0; color: var(--gold); }
+  .job-card .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+  .job-card .rate { font-weight: 700; font-size: 0.97rem; color: var(--sage); }
+  .job-card .deadline { font-size: 0.75rem; color: var(--muted); }
+
+  /* ── PRACTITIONER CARD ── */
+  .prac-card { text-align: center; }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 1.5rem; margin: 0 auto 0.7rem;
+    font-family: 'Playfair Display', serif; font-weight: 900;
+  }
+  .prac-card h3 { font-size: 0.92rem; font-weight: 600; margin-bottom: 0.2rem; }
+  .prac-card .role { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .prac-card .langs { font-size: 0.72rem; font-weight: 600; color: var(--sage); margin-bottom: 0.6rem; }
+  .stars { color: var(--gold); font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .prac-card .gigs { font-size: 0.72rem; color: var(--muted); }
+  .badge-free {
+    display: inline-block; background: var(--sage); color: #fff;
+    font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem;
+    border-radius: 10px; margin-top: 0.4rem; letter-spacing: 0.05em;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.3rem; border-radius: 8px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; transition: all 0.18s; letter-spacing: 0.02em;
+  }
+  .btn-gold { background: var(--gold); color: #fff; }
+  .btn-gold:hover { background: #b8892a; }
+  .btn-ink { background: var(--ink); color: var(--cream); }
+  .btn-ink:hover { background: #2a2820; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--ink); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── INNER TABS ── */
+  .inner-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1.5rem; }
+  .inner-tab {
+    padding: 0.6rem 1.2rem; font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all 0.18s;
+  }
+  .inner-tab:hover { color: var(--ink); }
+  .inner-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .inner-panel { display: none; }
+  .inner-panel.active { display: block; }
+
+  /* ── SEARCH BAR ── */
+  .search-bar { display: flex; gap: 0.7rem; margin-bottom: 1.3rem; align-items: center; }
+  .search-bar input {
+    flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 0.6rem 0.9rem; font-family: 'DM Sans', sans-serif; font-size: 0.87rem; background: var(--card);
+  }
+  .search-bar select {
+    border: 1.5px solid var(--border); border-radius: 8px; padding: 0.6rem 0.7rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem; background: var(--card); color: var(--ink);
+  }
+
+  /* ── AI ESTIMATOR ── */
+  .estimator { background: var(--ink); color: var(--cream); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
+  .estimator h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.4rem; color: var(--gold); }
+  .estimator p { font-size: 0.83rem; color: #9a9080; margin-bottom: 1.3rem; }
+  .est-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; }
+  .est-field label { display: block; font-size: 0.72rem; font-weight: 600; color: #9a9080; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.3rem; }
+  .est-field select, .est-field input {
+    width: 100%; background: #1e1d1a; border: 1px solid #3a3830; color: var(--cream);
+    border-radius: 7px; padding: 0.55rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  }
+  .est-result { background: #1e1d1a; border-radius: 10px; padding: 1.2rem 1.5rem; display: none; margin-top: 1rem; }
+  .est-result.show { display: block; animation: fadeIn 0.3s; }
+  .est-result .est-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.3rem 0; border-bottom: 1px solid #2a2820; }
+  .est-result .est-row:last-child { border: none; font-weight: 700; font-size: 0.97rem; color: var(--gold); margin-top: 0.3rem; }
+  .est-result .est-row span:first-child { color: #9a9080; }
+
+  /* ── STAT ROW ── */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .stat-card .num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--ink); }
+  .stat-card .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+  .stat-card .trend { font-size: 0.75rem; font-weight: 600; margin-top: 0.3rem; }
+  .trend-up { color: var(--sage); }
+  .trend-dn { color: var(--rust); }
+
+  /* ── ADMIN TABLE ── */
+  .job-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  .job-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); padding: 0.6rem 0.8rem; border-bottom: 2px solid var(--border); }
+  .job-table td { padding: 0.75rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .job-table tr:hover td { background: #f8f4ec; }
+  .status-pill { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; }
+  .s-active { background: #e8f4eb; color: var(--sage); }
+  .s-review { background: #fdf3e0; color: var(--gold); }
+  .s-complete { background: #e8eef8; color: var(--sky); }
+  .s-dispute { background: #fdecea; color: var(--rust); }
+
+  /* ── POST JOB FORM ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .form-field.full { grid-column: 1/-1; }
+  .form-field label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .form-field input, .form-field select, .form-field textarea {
+    border: 1.5px solid var(--border); border-radius: 8px; padding: 0.6rem 0.85rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.87rem; background: var(--card); color: var(--ink); transition: border 0.2s;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--gold); }
+  .form-field textarea { resize: vertical; min-height: 90px; }
+  .form-actions { display: flex; gap: 0.8rem; margin-top: 1.3rem; }
+
+  /* ── REVENUE VIEW ── */
+  .rev-hero {
+    background: var(--ink); color: var(--cream); border-radius: 16px;
+    padding: 2.5rem; margin-bottom: 1.5rem; position: relative; overflow: hidden;
+  }
+  .rev-hero::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,153,58,0.18) 0%, transparent 70%);
+  }
+  .rev-hero h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.5rem; }
+  .rev-hero h2 em { color: var(--gold); font-style: normal; }
+  .rev-hero p { color: #9a9080; font-size: 0.9rem; line-height: 1.6; }
+
+  /* sliders panel */
+  .slider-panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .slider-panel-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 1.2rem; }
+  .sliders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .sl-field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .sl-field label {
+    font-size: 0.75rem; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    display: flex; justify-content: space-between;
+  }
+  .sl-field label span { color: var(--gold); font-family: 'Playfair Display', serif; font-size: 1rem; text-transform: none; letter-spacing: 0; }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px;
+    background: var(--border); outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--gold); border: 2px solid var(--cream);
+    box-shadow: 0 0 0 3px rgba(200,153,58,0.2); transition: box-shadow 0.2s;
+  }
+  input[type=range]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(200,153,58,0.2); }
+
+  /* flow cards */
+  .rev-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 0; margin-bottom: 1.5rem; }
+  .rev-arrow { color: var(--muted); font-size: 1.4rem; text-align: center; padding: 0 0.3rem; padding-top: 2rem; }
+  .flow-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.4rem 1.2rem; position: relative; overflow: hidden;
+  }
+  .flow-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0; }
+  .flow-card.fc-gigs::before { background: var(--gold); }
+  .flow-card.fc-comm::before { background: var(--green); }
+  .flow-card.fc-subs::before { background: var(--blue); }
+  .fc-num { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .fc-label { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .fc-formula { font-size: 0.73rem; color: var(--muted); margin-bottom: 0.8rem; line-height: 1.5; }
+  .fc-val { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; line-height: 1; transition: all 0.4s; }
+  .fc-desc { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+  .fc-gigs .fc-val { color: var(--gold); }
+  .fc-comm .fc-val { color: var(--green); }
+  .fc-subs .fc-val { color: var(--blue); }
+
+  /* total card */
+  .rev-total {
+    background: var(--ink); color: var(--cream); border-radius: 16px;
+    padding: 2rem 2.5rem; margin-bottom: 1.5rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 2rem;
+    position: relative; overflow: hidden;
+  }
+  .rev-total::after {
+    content: ''; position: absolute; right: -50px; bottom: -50px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,153,58,0.1) 0%, transparent 70%);
+  }
+  .rt-left .rt-lbl { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #9a9080; margin-bottom: 0.5rem; }
+  .rt-left .rt-eq { font-size: 0.87rem; color: #9a9080; margin-bottom: 0.4rem; }
+  .rt-left .rt-eq strong { color: var(--cream); }
+  .rt-left .rt-note { font-size: 0.75rem; color: #6a6050; line-height: 1.55; max-width: 380px; }
+  .rt-right { text-align: right; flex-shrink: 0; }
+  .rt-amount { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1; transition: all 0.4s; white-space: nowrap; }
+  .rt-sub { font-size: 0.75rem; color: #6a6050; margin-top: 0.3rem; }
+
+  /* bar breakdown */
+  .rev-bar-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; margin-bottom: 1.5rem; }
+  .rbc-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 1rem; }
+  .bar-wrap { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; display: flex; margin-bottom: 1rem; }
+  .bar-seg { height: 100%; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .bar-seg.bs-comm { background: var(--green); }
+  .bar-seg.bs-subs { background: var(--blue); }
+  .bd-legend { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .bd-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+  .bd-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .bd-pct { font-family: 'Playfair Display', serif; font-weight: 700; margin-left: 0.2rem; }
+
+  /* scale table */
+  .scale-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; }
+  .sc-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 1rem; }
+  .scale-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .scale-table th { text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); font-weight: 600; }
+  .scale-table td { padding: 0.65rem 0.7rem; border-bottom: 1px solid var(--border); }
+  .scale-table tr:last-child td { border: none; }
+  .scale-table tr.sc-highlight td { background: #fdf8ee; }
+  .scale-table tr.sc-highlight td:first-child { border-left: 2px solid var(--gold); }
+  .td-gold { color: var(--gold); font-family: 'Playfair Display', serif; font-weight: 700; }
+  .td-green { color: var(--sage); font-family: 'Playfair Display', serif; font-weight: 700; }
+
+  /* ── MODALS ── */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--card); border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%; }
+  .modal h2 { font-family: 'Playfair Display', serif; margin-bottom: 0.5rem; }
+  .modal p { font-size: 0.87rem; color: var(--muted); margin-bottom: 1.2rem; line-height: 1.6; }
+  .modal-feat { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .modal-feat-row { display: flex; align-items: center; gap: 0.7rem; font-size: 0.85rem; }
+  .modal-feat-row .icon { font-size: 1.1rem; }
+  .close-btn { float: right; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--muted); margin-top: -1.5rem; }
+  .jd-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+  .jd-header h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; max-width: 78%; }
+  .jd-section { margin-bottom: 1rem; }
+  .jd-section label { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.3rem; font-weight: 600; }
+  .jd-section p { font-size: 0.87rem; line-height: 1.6; }
+  .apply-row { display: flex; gap: 0.8rem; margin-top: 1.4rem; }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.7rem; }
+
+  @media(max-width:640px) {
+    .rev-flow { grid-template-columns: 1fr; gap: 0.7rem; }
+    .rev-arrow { display: none; }
+    .rev-total { flex-direction: column; text-align: center; }
+    .rt-right { text-align: center; }
+    .sliders-grid, .est-grid, .form-grid { grid-template-columns: 1fr; }
+    .form-field.full { grid-column: 1; }
+    nav { padding: 0 0.8rem; }
+    .view { padding: 1rem; }
+    .hero { padding: 2rem 1.2rem; }
+    .hero h1 { font-size: 1.8rem; }
+    .nav-tab { padding: 0 0.6rem; font-size: 0.72rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="switchView('home')"><span class="bolt">⚡</span>Media <span>Bolt</span></div>
+  <div class="nav-tabs">
+    <div class="nav-tab active"  onclick="switchView('home')">Home</div>
+    <div class="nav-tab" onclick="switchView('jobs')">Jobs</div>
+    <div class="nav-tab" onclick="switchView('talent')">Talent</div>
+
+    <div class="nav-tab" onclick="switchView('admin')">Dashboard</div>
+
+  </div>
+  <div class="offline-badge" onclick="showOffline()">
+    <div class="dot"></div> Low-Data Mode
+  </div>
+</nav>
+
+<!-- ══════════════ HOME ══════════════ -->
+<div class="view active" id="view-home">
+  <div class="hero">
+    <h1>Where <em>African voices</em><br>find their platform.</h1>
+    <p>Media Bolt connects South African media companies with verified journalists, PR writers, and vernacular translators — fast, fair and culturally fluent.</p>
+    <div class="lang-chips">
+      <span class="lang-chip">isiZulu</span><span class="lang-chip">isiXhosa</span>
+      <span class="lang-chip">Sesotho</span><span class="lang-chip">Afrikaans</span>
+      <span class="lang-chip">Setswana</span><span class="lang-chip">Sepedi</span>
+      <span class="lang-chip">Tshivenda</span><span class="lang-chip">Xitsonga</span>
+      <span class="lang-chip">+ 4 more</span>
+    </div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num">1 240</div><div class="lbl">Practitioners</div><div class="trend trend-up">↑ 14% this month</div></div>
+    <div class="stat-card"><div class="num">348</div><div class="lbl">Active Jobs</div><div class="trend trend-up">↑ 8%</div></div>
+    <div class="stat-card"><div class="num">12</div><div class="lbl">Languages</div><div class="trend">All 12 official</div></div>
+    <div class="stat-card"><div class="num">94%</div><div class="lbl">On-time Rate</div><div class="trend trend-up">↑ 2%</div></div>
+    <div class="stat-card"><div class="num">R2.1M</div><div class="lbl">Paid Out</div><div class="trend trend-up">↑ 22%</div></div>
+  </div>
+  <p class="section-title">Featured Jobs</p>
+  <div class="grid grid-2" id="home-jobs"></div>
+  <p class="section-title" style="margin-top:2rem">Top Practitioners</p>
+  <div class="grid grid-3" id="home-talent"></div>
+</div>
+
+<!-- ══════════════ JOBS ══════════════ -->
+<div class="view" id="view-jobs">
+  <div class="inner-tabs">
+    <div class="inner-tab active" onclick="switchInner('jobs','browse')">Browse Jobs</div>
+    <div class="inner-tab" onclick="switchInner('jobs','estimator')">AI Cost Estimator</div>
+  </div>
+  <div class="inner-panel active" id="jobs-browse">
+    <div class="search-bar">
+      <input type="text" placeholder="Search by keyword or language…" id="job-search" oninput="renderJobs()"/>
+      <select id="job-filter" onchange="renderJobs()">
+        <option value="">All types</option>
+        <option>Translation</option><option>Journalism</option>
+        <option>PR Writing</option><option>Voiceover</option><option>Video</option>
+      </select>
+    </div>
+    <div class="grid grid-2" id="jobs-grid"></div>
+  </div>
+  <div class="inner-panel" id="jobs-estimator">
+    <div class="estimator">
+      <h2>🤖 AI Cost Estimator</h2>
+      <p>Get an instant project quote before you post. Powered by Media Bolt's pricing engine.</p>
+      <div class="est-grid">
+        <div class="est-field"><label>Service Type</label>
+          <select id="est-type" onchange="calcEstimate()">
+            <option>Translation</option><option>Journalism</option>
+            <option>PR Writing</option><option>Voiceover</option><option>Video Production</option>
+          </select>
+        </div>
+        <div class="est-field"><label>Language Pair</label>
+          <select id="est-lang" onchange="calcEstimate()">
+            <option>English → isiZulu</option><option>English → isiXhosa</option>
+            <option>English → Sesotho</option><option>Afrikaans → English</option>
+            <option>English → Setswana</option>
+          </select>
+        </div>
+        <div class="est-field"><label>Word / Minute Count</label>
+          <input type="number" id="est-count" value="500" min="100" max="10000" onchange="calcEstimate()"/>
+        </div>
+        <div class="est-field"><label>Urgency</label>
+          <select id="est-urgency" onchange="calcEstimate()">
+            <option>Standard (5–7 days)</option><option>Express (2–3 days)</option><option>Urgent (24 hrs)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-gold" onclick="calcEstimate()">Calculate Estimate</button>
+      <div class="est-result" id="est-result">
+        <div class="est-row"><span>Base rate</span><span id="er-base"></span></div>
+        <div class="est-row"><span>Urgency premium</span><span id="er-urgency"></span></div>
+        <div class="est-row"><span>Media Bolt commission (12%)</span><span id="er-commission"></span></div>
+        <div class="est-row"><span>TOTAL (excl. VAT)</span><span id="er-total"></span></div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+      💡 <strong style="color:var(--ink)">How it works:</strong> Estimates are generated from our live rate database of 1 200+ practitioners. Media Bolt charges a 10–15% commission on each project. Practitioners receive the net payout within 48 hours of delivery confirmation.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TALENT ══════════════ -->
+<div class="view" id="view-talent">
+  <div class="search-bar">
+    <input type="text" placeholder="Search practitioners by name or skill…" id="talent-search" oninput="renderTalent()"/>
+    <select id="talent-filter" onchange="renderTalent()">
+      <option value="">All roles</option>
+      <option>Translator</option><option>Journalist</option>
+      <option>PR Writer</option><option>Voiceover Artist</option><option>Videographer</option>
+    </select>
+  </div>
+  <div class="grid grid-3" id="talent-grid"></div>
+</div>
+
+
+
+<!-- ══════════════ ADMIN DASHBOARD ══════════════ -->
+<div class="view" id="view-admin">
+  <p class="section-title">Admin Dashboard</p>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num">348</div><div class="lbl">Active Jobs</div><div class="trend trend-up">↑ 8%</div></div>
+    <div class="stat-card"><div class="num">1 240</div><div class="lbl">Practitioners</div><div class="trend trend-up">↑ 14%</div></div>
+    <div class="stat-card"><div class="num">87</div><div class="lbl">Companies</div><div class="trend trend-up">↑ 5%</div></div>
+    <div class="stat-card"><div class="num">R2.1M</div><div class="lbl">Total Paid Out</div><div class="trend trend-up">↑ 22%</div></div>
+    <div class="stat-card"><div class="num">R214k</div><div class="lbl">Commission Earned</div><div class="trend trend-up">↑ 19%</div></div>
+    <div class="stat-card"><div class="num">3</div><div class="lbl">Disputes Open</div><div class="trend trend-dn">↑ 1 new</div></div>
+  </div>
+  <p class="section-title">Live Job Monitor</p>
+  <table class="job-table">
+    <thead><tr><th>Job</th><th>Company</th><th>Practitioner</th><th>Language</th><th>Due</th><th>Status</th></tr></thead>
+    <tbody id="admin-table"></tbody>
+  </table>
+</div>
+
+<!-- ══════════════ REVENUE ══════════════ -->
+<div class="view" id="view-revenue">
+  <div class="rev-hero">
+    <h2>How We <em>Make Money</em></h2>
+    <p>Media Bolt earns through two streams: a commission on every completed gig, and recurring subscription fees from practitioners. Adjust the sliders to model your growth.</p>
+  </div>
+
+  <!-- SLIDERS -->
+  <div class="slider-panel">
+    <div class="slider-panel-title">Adjust Variables</div>
+    <div class="sliders-grid">
+      <div class="sl-field">
+        <label>Freelancers <span id="lbl-fl">10</span></label>
+        <input type="range" id="sl-fl" min="1" max="200" value="10" oninput="calcRev()"/>
+      </div>
+      <div class="sl-field">
+        <label>Gig Rate (R) <span id="lbl-rate">750</span></label>
+        <input type="range" id="sl-rate" min="200" max="5000" step="50" value="750" oninput="calcRev()"/>
+      </div>
+      <div class="sl-field">
+        <label>Commission % <span id="lbl-comm">15</span></label>
+        <input type="range" id="sl-comm" min="5" max="25" value="15" oninput="calcRev()"/>
+      </div>
+      <div class="sl-field">
+        <label>Subscribers <span id="lbl-subs">6</span></label>
+        <input type="range" id="sl-subs" min="0" max="500" value="6" oninput="calcRev()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW CARDS -->
+  <div class="rev-flow">
+    <div class="flow-card fc-gigs">
+      <div class="fc-num">01 · Gigs Total</div>
+      <div class="fc-label">Total Gig Value</div>
+      <div class="fc-formula" id="rv-gig-formula">R750 × 10 freelancers</div>
+      <div class="fc-val" id="rv-gigs">R7,500</div>
+      <div class="fc-desc">= Total gig value generated</div>
+    </div>
+    <div class="rev-arrow">→</div>
+    <div class="flow-card fc-comm">
+      <div class="fc-num">02 · Commission</div>
+      <div class="fc-label">Our Cut Per Cycle</div>
+      <div class="fc-formula" id="rv-comm-formula">15% × R7,500</div>
+      <div class="fc-val" id="rv-comm">R1,125</div>
+      <div class="fc-desc">= Our cut per job cycle</div>
+    </div>
+    <div class="rev-arrow">+</div>
+    <div class="flow-card fc-subs">
+      <div class="fc-num">03 · Subscriptions</div>
+      <div class="fc-label">Recurring Monthly</div>
+      <div class="fc-formula" id="rv-subs-formula">6 subscribers × R150/month</div>
+      <div class="fc-val" id="rv-subs">R900</div>
+      <div class="fc-desc">= Recurring monthly income</div>
+    </div>
+  </div>
+
+  <!-- TOTAL -->
+  <div class="rev-total">
+    <div class="rt-left">
+      <div class="rt-lbl">Total Monthly Revenue</div>
+      <div class="rt-eq" id="rv-equation"><strong>R1,125</strong> commission + <strong>R900</strong> subscriptions</div>
+      <div class="rt-note">Revenue grows as more freelancers complete gigs and practitioners upgrade to paid subscriptions after their first 3–5 free gigs.</div>
+    </div>
+    <div class="rt-right">
+      <div class="rt-amount" id="rv-total">R2,025</div>
+      <div class="rt-sub">per month</div>
+    </div>
+  </div>
+
+  <!-- BAR BREAKDOWN -->
+  <div class="rev-bar-card">
+    <div class="rbc-title">Revenue Mix</div>
+    <div class="bar-wrap">
+      <div class="bar-seg bs-comm" id="rv-bar-comm" style="width:55.6%"></div>
+      <div class="bar-seg bs-subs" id="rv-bar-subs" style="width:44.4%"></div>
+    </div>
+    <div class="bd-legend">
+      <div class="bd-item"><div class="bd-dot" style="background:var(--green)"></div>Commission <span class="bd-pct" id="rv-pct-comm">55.6%</span></div>
+      <div class="bd-item"><div class="bd-dot" style="background:var(--blue)"></div>Subscriptions <span class="bd-pct" id="rv-pct-subs">44.4%</span></div>
+    </div>
+  </div>
+
+  <!-- SCALE TABLE -->
+  <div class="scale-card">
+    <div class="sc-title">Growth Scenarios</div>
+    <table class="scale-table">
+      <thead><tr><th>Freelancers</th><th>Gig Value</th><th>Commission</th><th>Subscribers</th><th>Sub Income</th><th>Monthly Total</th></tr></thead>
+      <tbody id="rv-scale-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ OFFLINE MODAL ══════════════ -->
+<div class="overlay" id="offline-overlay">
+  <div class="modal">
+    <button class="close-btn" onclick="hideOffline()">✕</button>
+    <h2>📵 Low-Data Mode</h2>
+    <p>Media Bolt works in areas with limited or no internet — designed for practitioners across rural South Africa, from the Eastern Cape to Limpopo.</p>
+    <div class="modal-feat">
+      <div class="modal-feat-row"><span class="icon">🔊</span><span>Voice-to-text job bidding — no typing needed</span></div>
+      <div class="modal-feat-row"><span class="icon">📥</span><span>Job listings cached locally for offline browsing</span></div>
+      <div class="modal-feat-row"><span class="icon">📡</span><span>Auto-syncs when Wi-Fi or data is restored</span></div>
+      <div class="modal-feat-row"><span class="icon">♿</span><span>Screen-reader compatible & high-contrast mode</span></div>
+      <div class="modal-feat-row"><span class="icon">📍</span><span>Connects to SA Connect public Wi-Fi hotspots (12 522 deployed)</span></div>
+    </div>
+    <button class="btn btn-gold" onclick="hideOffline()">Got it</button>
+  </div>
+</div>
+
+<!-- ══════════════ JOB DETAIL MODAL ══════════════ -->
+<div class="overlay" id="job-overlay">
+  <div class="modal" style="max-width:500px">
+    <button class="close-btn" onclick="hideJobModal()">✕</button>
+    <div class="jd-header"><h2 id="jm-title"></h2></div>
+    <div class="jd-section"><label>Company</label><p id="jm-company"></p></div>
+    <div class="jd-section"><label>Description</label><p id="jm-desc"></p></div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.8rem" id="jm-tags"></div>
+    <div style="display:flex;gap:1.5rem">
+      <div class="jd-section"><label>Rate</label><p id="jm-rate" style="font-weight:700;color:var(--sage)"></p></div>
+      <div class="jd-section"><label>Deadline</label><p id="jm-deadline"></p></div>
+    </div>
+    <div class="apply-row">
+      <button class="btn btn-gold" onclick="applyJob()">Apply Now</button>
+      <button class="btn btn-outline" onclick="hideJobModal()">Close</button>
+    </div>
+    <div id="apply-confirm" style="display:none;margin-top:0.8rem;background:#e8f4eb;border-radius:8px;padding:0.8rem;font-size:0.83rem;color:var(--sage);font-weight:600;"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const JOBS = [
+  { id:1, title:"isiZulu TV News Translator", company:"SABC News", type:"Translation", lang:"isiZulu", rate:"R3 200", deadline:"18 Mar 2026", urgent:true, ai:true, desc:"Translate 5 daily news bulletins from English to isiZulu. Broadcast quality required. Cultural adaptation essential for township and rural audiences." },
+  { id:2, title:"Freelance Investigative Journalist", company:"Daily Maverick", type:"Journalism", lang:"English", rate:"R5 500", deadline:"25 Mar 2026", urgent:false, ai:true, desc:"Investigate informal economy practices in Johannesburg CBD. 2 000-word feature. Sources to be verified independently." },
+  { id:3, title:"isiXhosa Radio Voiceover Artist", company:"Umhlobo Wenene FM", type:"Voiceover", lang:"isiXhosa", rate:"R1 800", deadline:"15 Mar 2026", urgent:true, ai:false, desc:"Record 10 × 30-second promotional scripts in isiXhosa. Warm, community-focused tone. Home studio acceptable." },
+  { id:4, title:"Sesotho Press Release Writer", company:"Government Communications", type:"PR Writing", lang:"Sesotho", rate:"R2 400", deadline:"20 Mar 2026", urgent:false, ai:true, desc:"Draft a 600-word press release about the SA Connect rollout for Sesotho-speaking communities in the Free State." },
+  { id:5, title:"Afrikaans Video Subtitler", company:"kykNET", type:"Video Production", lang:"Afrikaans", rate:"R2 100", deadline:"22 Mar 2026", urgent:false, ai:false, desc:"Add burnt-in Afrikaans subtitles to a 45-minute documentary. SRT file provided. Cultural idiom checking required." },
+  { id:6, title:"Setswana Community News Reporter", company:"North West FM", type:"Journalism", lang:"Setswana", rate:"R2 800", deadline:"17 Mar 2026", urgent:true, ai:true, desc:"Cover municipal budget hearings in Mafikeng. 3 × 400-word reports. Must have own transport or claim mileage." },
+  { id:7, title:"Tshivenda Cultural Content Writer", company:"Phalaborwa Media", type:"PR Writing", lang:"Tshivenda", rate:"R1 600", deadline:"28 Mar 2026", urgent:false, ai:false, desc:"Create culturally relevant content for a tourism campaign targeting Venda heritage sites. 4 × 300-word pieces." },
+  { id:8, title:"Sepedi Audio Drama Scriptwriter", company:"Thobela FM", type:"PR Writing", lang:"Sepedi", rate:"R4 000", deadline:"30 Mar 2026", urgent:false, ai:true, desc:"Write a 25-minute audio drama script on gender-based violence awareness in Sepedi. Sensitive handling required." },
+];
+const PRACTITIONERS = [
+  { name:"Nomvula Dlamini", role:"Translator & Journalist", langs:"isiZulu · isiXhosa", stars:5, gigs:47, color:"#4a7c59", free:false },
+  { name:"Sipho Khumalo", role:"Voiceover Artist", langs:"isiZulu · English", stars:5, gigs:32, color:"#2a6496", free:true },
+  { name:"Lerato Mokoena", role:"PR Writer", langs:"Sesotho · English", stars:4, gigs:19, color:"#c8993a", free:true },
+  { name:"Thabo Nkosi", role:"Videographer", langs:"English · Setswana", stars:5, gigs:61, color:"#c0421a", free:false },
+  { name:"Ayanda Zulu", role:"Journalist", langs:"isiXhosa · English", stars:4, gigs:28, color:"#6a4c93", free:true },
+  { name:"Miné du Plessis", role:"Translator", langs:"Afrikaans · English", stars:5, gigs:53, color:"#2e4057", free:false },
+  { name:"Ndivho Ramadwa", role:"Scriptwriter", langs:"Tshivenda · Sepedi", stars:4, gigs:15, color:"#1b7a5a", free:true },
+  { name:"Palesa Sithole", role:"PR Writer", langs:"Sesotho · isiZulu", stars:5, gigs:39, color:"#8b4513", free:false },
+  { name:"Erica Smit", role:"Journalist", langs:"Afrikaans · English", stars:4, gigs:22, color:"#4a4e69", free:true },
+];
+const ADMIN_JOBS = [
+  { title:"isiZulu TV News Translator", company:"SABC News", prac:"Nomvula Dlamini", lang:"isiZulu", due:"18 Mar", status:"active" },
+  { title:"Sesotho Press Release", company:"Govt Comms", prac:"Lerato Mokoena", lang:"Sesotho", due:"20 Mar", status:"review" },
+  { title:"Afrikaans Subtitler", company:"kykNET", prac:"Miné du Plessis", lang:"Afrikaans", due:"22 Mar", status:"complete" },
+  { title:"isiXhosa Voiceover", company:"Umhlobo Wenene", prac:"Sipho Khumalo", lang:"isiXhosa", due:"15 Mar", status:"active" },
+  { title:"Setswana Reporter", company:"North West FM", prac:"Thabo Nkosi", lang:"Setswana", due:"17 Mar", status:"dispute" },
+  { title:"Sepedi Audio Drama", company:"Thobela FM", prac:"Ndivho Ramadwa", lang:"Sepedi", due:"30 Mar", status:"active" },
+];
+
+// ── RENDER HELPERS ──
+function fmt(n) { return 'R' + Math.round(n).toLocaleString('en-ZA'); }
+
+function renderJobCard(j) {
+  return `<div class="card job-card" onclick="openJobModal(${j.id})">
+    <div class="job-top"><h3>${j.title}</h3></div>
+    <div class="company">${j.company}</div>
+    <div class="tags">
+      <span class="tag tag-lang">${j.lang}</span>
+      <span class="tag tag-type">${j.type}</span>
+      ${j.urgent ? '<span class="tag tag-urgent">Urgent</span>' : ''}
+      ${j.ai ? '<span class="tag tag-ai">AI Matched</span>' : ''}
+    </div>
+    <div class="footer"><span class="rate">${j.rate}</span><span class="deadline">Due ${j.deadline}</span></div>
+  </div>`;
+}
+function renderPracCard(p) {
+  const initials = p.name.split(' ').map(x=>x[0]).join('');
+  return `<div class="card prac-card">
+    <div class="avatar" style="background:${p.color}20;color:${p.color}">${initials}</div>
+    <h3>${p.name}</h3>
+    <div class="role">${p.role}</div>
+    <div class="langs">🌍 ${p.langs}</div>
+    <div class="stars">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)}</div>
+    <div class="gigs">${p.gigs} jobs completed</div>
+    ${p.free ? '<span class="badge-free">FREE TRIAL ACTIVE</span>' : ''}
+  </div>`;
+}
+
+function renderJobs() {
+  const q = (document.getElementById('job-search')?.value||'').toLowerCase();
+  const f = document.getElementById('job-filter')?.value||'';
+  const filtered = JOBS.filter(j => (!q||j.title.toLowerCase().includes(q)||j.lang.toLowerCase().includes(q))&&(!f||j.type===f));
+  const el = document.getElementById('jobs-grid');
+  if(el) el.innerHTML = filtered.length ? filtered.map(renderJobCard).join('') : '<div class="empty-state"><div class="icon">🔍</div><p>No jobs match your search.</p></div>';
+}
+function renderTalent() {
+  const q = (document.getElementById('talent-search')?.value||'').toLowerCase();
+  const f = document.getElementById('talent-filter')?.value||'';
+  const filtered = PRACTITIONERS.filter(p => (!q||p.name.toLowerCase().includes(q)||p.role.toLowerCase().includes(q))&&(!f||p.role.includes(f)));
+  const el = document.getElementById('talent-grid');
+  if(el) el.innerHTML = filtered.length ? filtered.map(renderPracCard).join('') : '<div class="empty-state"><div class="icon">👤</div><p>No practitioners found.</p></div>';
+}
+function renderHome() {
+  const hj = document.getElementById('home-jobs'); if(hj) hj.innerHTML = JOBS.slice(0,4).map(renderJobCard).join('');
+  const ht = document.getElementById('home-talent'); if(ht) ht.innerHTML = PRACTITIONERS.slice(0,3).map(renderPracCard).join('');
+}
+function renderAdmin() {
+  const t = document.getElementById('admin-table'); if(!t) return;
+  const s = {active:'s-active',review:'s-review',complete:'s-complete',dispute:'s-dispute'};
+  const sl = {active:'Active',review:'Under Review',complete:'Completed',dispute:'Dispute'};
+  t.innerHTML = ADMIN_JOBS.map(j=>`<tr>
+    <td><strong>${j.title}</strong></td><td>${j.company}</td><td>${j.prac}</td>
+    <td><span class="tag tag-lang">${j.lang}</span></td><td>${j.due}</td>
+    <td><span class="status-pill ${s[j.status]}">${sl[j.status]}</span></td>
+  </tr>`).join('');
+}
+
+// ── NAVIGATION ──
+function switchView(v) {
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const tabs = ['home','jobs','talent','admin'];
+  document.querySelectorAll('.nav-tab')[tabs.indexOf(v)]?.classList.add('active');
+  if(v==='home') renderHome();
+  if(v==='jobs') { renderJobs(); calcEstimate(); }
+  if(v==='talent') renderTalent();
+  if(v==='admin') renderAdmin();
+  if(v==='revenue') calcRev();
+}
+function switchInner(view, panel) {
+  const panels = document.querySelectorAll(`#view-${view} .inner-panel`);
+  const tabs2 = document.querySelectorAll(`#view-${view} .inner-tab`);
+  panels.forEach(x=>x.classList.remove('active')); tabs2.forEach(x=>x.classList.remove('active'));
+  document.getElementById(`${view}-${panel}`).classList.add('active');
+  const panelNames = [...panels].map(p=>p.id.split('-').pop());
+  tabs2[panelNames.indexOf(panel)]?.classList.add('active');
+}
+
+// ── AI ESTIMATOR ──
+const BASE = { Translation:0.28, Journalism:0.45, 'PR Writing':0.38, Voiceover:2.2, 'Video Production':3.5 };
+const URGENCY_MULT = { 'Standard (5–7 days)':1, 'Express (2–3 days)':1.35, 'Urgent (24 hrs)':1.75 };
+function calcEstimate() {
+  const type = document.getElementById('est-type')?.value;
+  const count = parseInt(document.getElementById('est-count')?.value)||500;
+  const urgency = document.getElementById('est-urgency')?.value;
+  if(!type||!urgency) return;
+  const base = Math.round(BASE[type]*count);
+  const umult = URGENCY_MULT[urgency];
+  const premium = Math.round(base*(umult-1));
+  const subtotal = base+premium;
+  const commission = Math.round(subtotal*0.12);
+  const total = subtotal+commission;
+  document.getElementById('er-base').textContent = `R${base.toLocaleString()}`;
+  document.getElementById('er-urgency').textContent = `R${premium.toLocaleString()}`;
+  document.getElementById('er-commission').textContent = `R${commission.toLocaleString()}`;
+  document.getElementById('er-total').textContent = `R${total.toLocaleString()}`;
+  document.getElementById('est-result').classList.add('show');
+}
+
+// ── REVENUE CALCULATOR ──
+const SUB_RATE = 150;
+function calcRev() {
+  const fl = parseInt(document.getElementById('sl-fl').value);
+  const rate = parseInt(document.getElementById('sl-rate').value);
+  const commPct = parseInt(document.getElementById('sl-comm').value);
+  const subs = parseInt(document.getElementById('sl-subs').value);
+  document.getElementById('lbl-fl').textContent = fl;
+  document.getElementById('lbl-rate').textContent = rate;
+  document.getElementById('lbl-comm').textContent = commPct;
+  document.getElementById('lbl-subs').textContent = subs;
+  const gigTotal = fl * rate;
+  const commission = gigTotal * (commPct / 100);
+  const subIncome = subs * SUB_RATE;
+  const total = commission + subIncome;
+  document.getElementById('rv-gig-formula').textContent = `R${rate} × ${fl} freelancers`;
+  document.getElementById('rv-gigs').textContent = fmt(gigTotal);
+  document.getElementById('rv-comm-formula').textContent = `${commPct}% × ${fmt(gigTotal)}`;
+  document.getElementById('rv-comm').textContent = fmt(commission);
+  document.getElementById('rv-subs-formula').textContent = `${subs} subscribers × R${SUB_RATE}/month`;
+  document.getElementById('rv-subs').textContent = fmt(subIncome);
+  document.getElementById('rv-equation').innerHTML = `<strong>${fmt(commission)}</strong> commission + <strong>${fmt(subIncome)}</strong> subscriptions`;
+  document.getElementById('rv-total').textContent = fmt(total);
+  if(total > 0) {
+    const cP = (commission/total*100).toFixed(1);
+    const sP = (subIncome/total*100).toFixed(1);
+    document.getElementById('rv-bar-comm').style.width = cP+'%';
+    document.getElementById('rv-bar-subs').style.width = sP+'%';
+    document.getElementById('rv-pct-comm').textContent = cP+'%';
+    document.getElementById('rv-pct-subs').textContent = sP+'%';
+  }
+  const scenarios = [{fl:10,sub:6},{fl:25,sub:15},{fl:50,sub:30},{fl:100,sub:60},{fl:250,sub:150},{fl:500,sub:300}];
+  document.getElementById('rv-scale-body').innerHTML = scenarios.map(s => {
+    const gv=s.fl*rate, cm=gv*(commPct/100), si=s.sub*SUB_RATE, tot=cm+si;
+    const hi = s.fl===fl;
+    return `<tr${hi?' class="sc-highlight"':''}>
+      <td>${s.fl}${hi?' ◀':''}</td><td class="td-gold">${fmt(gv)}</td>
+      <td>${fmt(cm)}</td><td>${s.sub}</td><td>${fmt(si)}</td>
+      <td class="td-green">${fmt(tot)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── JOB MODAL ──
+let currentJob = null;
+function openJobModal(id) {
+  currentJob = JOBS.find(j=>j.id===id); if(!currentJob) return;
+  document.getElementById('jm-title').textContent = currentJob.title;
+  document.getElementById('jm-company').textContent = currentJob.company;
+  document.getElementById('jm-desc').textContent = currentJob.desc;
+  document.getElementById('jm-rate').textContent = currentJob.rate;
+  document.getElementById('jm-deadline').textContent = currentJob.deadline;
+  document.getElementById('jm-tags').innerHTML = `
+    <span class="tag tag-lang">${currentJob.lang}</span>
+    <span class="tag tag-type">${currentJob.type}</span>
+    ${currentJob.urgent ? '<span class="tag tag-urgent">Urgent</span>' : ''}
+    ${currentJob.ai ? '<span class="tag tag-ai">AI Matched</span>' : ''}`;
+  document.getElementById('apply-confirm').style.display='none';
+  document.getElementById('job-overlay').classList.add('show');
+}
+function hideJobModal() { document.getElementById('job-overlay').classList.remove('show'); }
+function applyJob() {
+  const c = document.getElementById('apply-confirm');
+  c.style.display='block';
+  c.textContent = `✅ Application submitted for "${currentJob.title}"! Media Bolt will notify you within 24 hours.`;
+}
+
+// ── POST JOB ──
+function postJob() {
+  const title = document.getElementById('pj-title').value;
+  const company = document.getElementById('pj-company').value;
+  if(!title||!company) { alert('Please fill in at least the job title and company name.'); return; }
+  const c = document.getElementById('post-confirm');
+  c.style.display='block';
+  c.innerHTML = `✅ <strong>"${title}"</strong> has been posted! Media Bolt's AI is now matching suitable practitioners. You'll receive shortlisted profiles within 2 hours.`;
+}
+function previewEstimate() { switchView('jobs'); setTimeout(()=>switchInner('jobs','estimator'),100); }
+
+// ── OFFLINE MODAL ──
+function showOffline() { document.getElementById('offline-overlay').classList.add('show'); }
+function hideOffline() { document.getElementById('offline-overlay').classList.remove('show'); }
+
+// ── INIT ──
+renderHome();
+</script>
+</body>
+</html>
